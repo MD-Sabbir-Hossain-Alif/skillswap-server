@@ -36,6 +36,7 @@ async function run() {
         const db = client.db("skillswap");
         const tasksCollection = db.collection("tasks");
 
+        //Task related APIs
         app.post('/api/tasks', async (req, res) => {
             const task = req.body;
             console.log(task);
@@ -45,6 +46,17 @@ async function run() {
             }
             const result = await tasksCollection.insertOne(newTask);
             res.send(result)
+        });
+
+        app.get('/api/tasks', async (req, res) => {
+            const result = await tasksCollection.find().toArray();
+            res.send(result);
+        });
+
+        app.get('/api/tasks/:id', async (req, res) => {
+            const query = { userId: req.params.id };
+            const result = await tasksCollection.find(query).toArray();
+            res.send(result);
         });
 
         // Send a ping to confirm a successful connection
