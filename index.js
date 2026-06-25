@@ -35,6 +35,7 @@ async function run() {
         await client.connect();
         const db = client.db("skillswap");
         const tasksCollection = db.collection("tasks");
+        const freelancersCollection = db.collection("freelancers");
 
         //Task related APIs
         app.post('/api/tasks', async (req, res) => {
@@ -56,6 +57,23 @@ async function run() {
         app.get('/api/tasks/:id', async (req, res) => {
             const query = { userId: req.params.id };
             const result = await tasksCollection.find(query).toArray();
+            res.send(result);
+        });
+
+        // freelancer related APIs
+        app.post('/api/freelancers', async (req, res) => {
+            const freelancer = req.body;
+            console.log(freelancer);
+            const newFreelancer = {
+                ...freelancer,
+                createdAt: new Date()
+            }
+            const result = await freelancersCollection.insertOne(newFreelancer);
+            res.send(result);
+        });
+
+        app.get('/api/freelancers', async (req, res) => {
+            const result = await freelancersCollection.find().toArray();
             res.send(result);
         });
 
