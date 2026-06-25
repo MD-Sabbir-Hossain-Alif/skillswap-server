@@ -3,7 +3,7 @@ const dns = require("node:dns");
 dns.setServers(["1.1.1.1", "8.8.8.8"]); // Cloudflare + Google DNS
 
 const express = require('express')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 var cors = require('cors')
 require('dotenv').config()
 
@@ -54,9 +54,16 @@ async function run() {
             res.send(result);
         });
 
-        app.get('/api/tasks/:id', async (req, res) => {
+        app.get('/api/client/tasks/:id', async (req, res) => {
             const query = { userId: req.params.id };
             const result = await tasksCollection.find(query).toArray();
+            res.send(result);
+        });
+
+        app.get('/api/tasks/:id', async (req, res) => {
+            const id = new ObjectId(req.params.id);
+            console.log(id);
+            const result = await tasksCollection.findOne(id)
             res.send(result);
         });
 
