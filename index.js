@@ -36,6 +36,7 @@ async function run() {
         const db = client.db("skillswap");
         const tasksCollection = db.collection("tasks");
         const freelancersCollection = db.collection("freelancers");
+        const proposalsCollection = db.collection("proposals")
 
         //Task related APIs
         app.post('/api/tasks', async (req, res) => {
@@ -62,7 +63,7 @@ async function run() {
 
         app.get('/api/tasks/:id', async (req, res) => {
             const id = new ObjectId(req.params.id);
-            console.log(id);
+            // console.log(id);
             const result = await tasksCollection.findOne(id)
             res.send(result);
         });
@@ -70,7 +71,7 @@ async function run() {
         // freelancer related APIs
         app.post('/api/freelancers', async (req, res) => {
             const freelancer = req.body;
-            console.log(freelancer);
+            // console.log(freelancer);
             const newFreelancer = {
                 ...freelancer,
                 createdAt: new Date()
@@ -83,6 +84,18 @@ async function run() {
             const result = await freelancersCollection.find().toArray();
             res.send(result);
         });
+
+        // Proposal related apis
+        app.post('/api/proposals', async (req, res) => {
+            const proposal = req.body;
+            console.log(proposal);
+            const newProposal = {
+                ...proposal,
+                submittedAt: new Date()
+            }
+            const result = await proposalsCollection.insertOne(newProposal);
+            res.send(result)
+        })
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
