@@ -68,7 +68,24 @@ async function run() {
             res.send(result);
         });
 
-        // freelancer related APIs
+        app.patch('/api/tasks/:id', async (req, res) => {
+            const id = req.params.id
+            const task = req.body;
+            const filter = { _id: new ObjectId(id) }
+            const updateTask = { $set: { ...task } };
+
+            const result = await tasksCollection.updateOne(filter, updateTask);
+
+            res.send(result);
+        });
+
+        app.delete('/api/tasks/:id', async (req, res) => {
+            const id = req.params.id
+            const result = await tasksCollection.deleteOne({ _id: new ObjectId(id) })
+            res.send(result)
+        })
+
+        //* freelancer related APIs
         app.post('/api/freelancers', async (req, res) => {
             const freelancer = req.body;
             // console.log(freelancer);
