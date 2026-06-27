@@ -114,8 +114,41 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/api/proposals', async (req, res) => {
-            const result = await proposalsCollection.find().toArray();
+        app.get('/api/proposals/client/:id', async (req, res) => {
+            const clientId = req.params.id;
+
+            const pipeline = [
+                {
+                    $match: {
+                        clientId: clientId,
+                    },
+                },
+                {
+                    $group: {
+                        _id: "$taskId",
+                        taskId: { $first: "$taskId" },
+                        taskTitle: { $first: "$taskTitle" },
+                        proposals: {
+                            $push: {
+                                _id: "$_id",
+                                freelancerId: "$freelancerId",
+                                freelancerName: "$freelancerName",
+                                freelancerEmail: "$freelancerEmail",
+                                userImage: "$userImage",
+                                status: "$status",
+                                budget: "$budget",
+                                estimatedDay: "$estimatedDay",
+                                coverNote: "$coverNote",
+                                submittedAt: "$submittedAt",
+                            },
+                        },
+                    },
+                },
+            ]
+
+            const result = await proposalsCollection.aggregate(pipeline).toArray();
+            console.log(result);
+
             res.send(result);
         })
 
