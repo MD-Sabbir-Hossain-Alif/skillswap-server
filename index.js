@@ -122,6 +122,17 @@ async function run() {
             res.send(result);
         })
 
+        app.patch('/api/proposals/:id', async (req, res) => {
+            const id = req.params.id
+            const proposal = req.body;
+            const filter = { _id: new ObjectId(id) }
+            const updateProposal = { $set: { ...proposal } };
+
+            const result = await proposalsCollection.updateOne(filter, updateProposal);
+
+            res.send(result);
+        })
+
         app.get('/api/proposals/client/:id', async (req, res) => {
             const clientId = req.params.id;
 
@@ -169,7 +180,9 @@ async function run() {
         })
 
         // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
+        //TODO: Comment it when deploying
+        // await client.db("admin").command({ ping: 1 });
+
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
