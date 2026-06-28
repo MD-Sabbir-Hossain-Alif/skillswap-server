@@ -29,6 +29,12 @@ const client = new MongoClient(uri, {
     }
 });
 
+// TODO: 
+// client.connect(() => {
+//     console.log("Connected to MongoDB!")
+// }).catch(console.dir);
+
+
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
@@ -37,6 +43,7 @@ async function run() {
         const tasksCollection = db.collection("tasks");
         const freelancersCollection = db.collection("freelancers");
         const proposalsCollection = db.collection("proposals")
+        const paymentsCollection = db.collection('payments')
 
         //Task related APIs
         app.post('/api/tasks', async (req, res) => {
@@ -179,9 +186,34 @@ async function run() {
             res.send(result);
         })
 
+        //* Payment related apis
+        app.post('/api/payments', async (req, res) => {
+            const data = req.body;
+            const paymentInfo = {
+                ...data,
+                createdAt: new Date()
+            }
+
+            const result = await paymentsCollection.insertOne(paymentInfo);
+
+            // update the proposal status information
+            const filter = { _id: new ObjectId(data.proposalId) };
+            // update the value of the 'quantity' field to 5
+            const updateDocument = {
+                $set: {
+                    status: "accepted",
+                },
+            }
+
+            const updateResult = await proposalsCollection.updateOne(filter, updateDocument);
+            res.send(result)
+        })
+
+
+
         // Send a ping to confirm a successful connection
-        //TODO: Comment it when deploying
-        // await client.db("admin").command({ ping: 1 });
+        // TODO: Comment it when deploying
+        await client.db("admin").command({ ping: 1 });
 
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
@@ -195,3 +227,5 @@ run().catch(console.dir);
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
+
+// module.exports = app;
