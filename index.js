@@ -114,6 +114,14 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/api/proposals/:id', async (req, res) => {
+            const id = req.params.id;
+            // console.log(id);
+
+            const result = await proposalsCollection.findOne({ _id: new ObjectId(id) })
+            res.send(result);
+        })
+
         app.get('/api/proposals/client/:id', async (req, res) => {
             const clientId = req.params.id;
 
